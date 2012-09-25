@@ -31,7 +31,7 @@ int copy_from_user(void *start, void *dest, int size)
   q1=(Byte*)q;
   while(size > 0) {
     *q1++ = *p1++;
-    size --;
+    size--;
   }
   return 0;
 }
