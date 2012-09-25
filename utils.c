@@ -15,7 +15,7 @@ void copy_data(void *start, void *dest, int size)
   q1=(Byte*)q;
   while(size > 0) {
     *q1++ = *p1++;
-    size --;
+    size--;
   }
 }
 /* Copia de espacio de usuario a espacio de kernel, devuelve 0 si ok y -1 si error*/
