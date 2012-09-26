@@ -6,6 +6,7 @@
 #include <segment.h>
 #include <hardware.h>
 #include <io.h>
+#include <user.c>
 
 #include <zeos_interrupt.h>
 
@@ -89,7 +90,7 @@ void setIdt()
 void set_handlers() {
 	setInterruptHandler_keyboard(0x21, keyboard_handler, 0); // IDT entry 33
 	
-	setInterruptHandler_write(0x80, system_call_handler, 3);
+	setInterruptHandler_write(0x80, sys_call_handler, 3);
 
 	setInterruptHandler_clock(0x20, clock_handler, 0)// IDT 32
 }
@@ -115,20 +116,21 @@ int check_fd(int fd, int operation) {
 
 
 }
-	 
-}
 
 void clock_service_routine() {
-	zeos_show_clock();	
+	zeos_show_clock();
+	++zeos_ticks;
 }
 
-int sys_write(int fd, char * buffer, int syze) {
+int sys_gettime() {
+	char ticks = atoi(zeos_ticks);
+	write (1, &ticks, ticks.strlen);
+// falta copy data from/to
+}
+
+
+
+int sys_write(int fd, char *buffer, int syze) {
         check_fd(fd, ESCRITURA);
+// falta copy data from/to
 }
-
-int check_fd(int fd, int operation) {
-        if ((operartion == ESCRITURA || operation == LECTURA) && fd == 1) return 0;
-        perr
-        return -1;
-}
-

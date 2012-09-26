@@ -7,6 +7,32 @@
 #include <types.h>
 
 int errno;
+int write(int fd, char * buffer, int size) {
+        int resultat;
+        __asm__ __volatile__(
+
+        "movl %1, %%ebx\n"
+        "movl %2, %%ecx\n"
+        "movl %3, %%edx\n"
+        "movl $0x04, %%eax\n"
+        "int  $0x80"
+        "movl %%eax %0 \n"
+
+
+      :"g"(resultat)
+      : "g" (fd), "g" (buffer), "g" (size) );
+
+        if (resultat >= 0) return resultat; //no optim, pero ensamblador ho corregirà
+        else {
+                errno = -1*resultat;
+                return -1;
+        }
+}
+
+int gettime(){
+// wrapper
+
+}
 
 void itoa(int a, char *b)
 {

@@ -29,6 +29,10 @@ int write(int fd, char * buffer, int size) {
         }
 }
 
+int gettime(){
+// wrapper
+}
+
 void itoa(int a, char *b)
 {
   int i, i1;

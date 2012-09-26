@@ -85,6 +85,7 @@ ENTRY (clock_handler)
 	RESTORE_ALL
 	iret
 
+
 ENTRY (sys_call_table)
         .long sys_ni_syscall//0
         .long sys_ni_syscall
@@ -96,7 +97,7 @@ ENTRY (sys_call_table)
         .long sys_ni_syscall
         .long sys_ni_syscall
         .long sys_ni_syscall
-        .long sys_ni_syscall// 10
+        .long sys_getttime 	    // 10
         .long sys_ni_syscall
         .long sys_ni_syscall
         .long sys_ni_syscall
