@@ -5,13 +5,12 @@
 #include <interrupt.h>
 #include <segment.h>
 #include <hardware.h>
-#include <io.h>
-#include <user.c>
-
-#include <zeos_interrupt.h>
+#include <io.h>#include <entry.h>#include <zeos_interrupt.h>
 
 Gate idt[IDT_ENTRIES];
 Register    idtR;
+
+int zeos_ticks = 0;
 
 char char_map[] =
 {
@@ -81,40 +80,23 @@ void setIdt()
   idtR.base  = (DWord)idt;
   idtR.limit = IDT_ENTRIES * sizeof(Gate) - 1;
   /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
-  
-  set_handlers();
-
+  setInterruptHandler(0x21, keyboard_handler, 0); // IDT entry 33  
+  setInterruptHandler(0x20, clock_handler, 0);	// IDT 32
+  setTrapHandler(0x80, system_call_handler, 3);
   set_idt_reg(&idtR);
 }
 
-void set_handlers() {
-	setInterruptHandler_keyboard(0x21, keyboard_handler, 0); // IDT entry 33
-	
-	setInterruptHandler_write(0x80, sys_call_handler, 3);
-
-	setInterruptHandler_clock(0x20, clock_handler, 0)// IDT 32
-}
-
 void keyboard_service_routine() {
-	byte bits_mask;
+	int bits_mask;
 	bits_mask = inb(0x60);
-	mask_result = bits_mask & 10000000; // break == released
+	int mask_result = bits_mask & 10000000; // break == released
 			  		    // make == pressed
 	if (mask_result == 0) {
-		letter_map = bits_mask%10000000; // 10 Millons
-		word character_to_print = char_map[letter_map];
+		int letter_map = bits_mask%10000000; // 10 Millons
+		int character_to_print = char_map[letter_map];
 		if (character_to_print != '\0') character_to_print = 'C';
 		printc(character_to_print);
-	}int sys_write(int fd, char * buffer, int syze) {
-        check_fd(fd, ESCRITURA);
-}
-
-int check_fd(int fd, int operation) {
-        if ((operartion == ESCRITURA || operation == LECTURA) && fd == 1) return 0;
-        perr
-        return -1;
-
-
+	}		
 }
 
 void clock_service_routine() {
@@ -122,15 +104,6 @@ void clock_service_routine() {
 	++zeos_ticks;
 }
 
-int sys_gettime() {
-	char ticks = atoi(zeos_ticks);
-	write (1, &ticks, ticks.strlen);
-// falta copy data from/to
-}
-
-
-
-int sys_write(int fd, char *buffer, int syze) {
-        check_fd(fd, ESCRITURA);
-// falta copy data from/to
+int get_zeos_ticks() {
+	return zeos_ticks;
 }

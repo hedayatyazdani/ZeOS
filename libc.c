@@ -29,8 +29,17 @@ int write(int fd, char * buffer, int size) {
         }
 }
 
-int gettime(){
-// wrapper
+int gettime() {
+        int ticks;
+        __asm__ __volatile__(
+
+        "movl $0x0A, %%eax\n"
+        "int  $0x80"
+        "movl %%eax %0 \n"
+
+      	:"g"(ticks)
+      	: );
+	return ticks;
 }
 
 void itoa(int a, char *b)

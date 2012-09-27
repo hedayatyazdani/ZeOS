@@ -66,11 +66,11 @@
 
 
 #define EOI      \
-	imovb $0x20, %al ; \
+	movb $0x20, %al ; \
 	outb %al, $0x20 ;
 
 
-ENTRY(keboard_handler) 
+ENTRY(keyboard_handler) 
 	SAVE_ALL 
 	EOI
 	CALL keyboard_service_routine
@@ -84,28 +84,3 @@ ENTRY (clock_handler)
 	CALL clock_service_routine
 	RESTORE_ALL
 	iret
-
-
-ENTRY (sys_call_table)
-        .long sys_ni_syscall//0
-        .long sys_ni_syscall
-        .long sys_ni_syscall
-        .long sys_ni_syscall
-        .long sys_write
-        .long sys_ni_syscall// 5
-        .long sys_ni_syscall
-        .long sys_ni_syscall
-        .long sys_ni_syscall
-        .long sys_ni_syscall
-        .long sys_getttime 	    // 10
-        .long sys_ni_syscall
-        .long sys_ni_syscall
-        .long sys_ni_syscall
-        .long sys_ni_syscall
-        .long sys_ni_syscall// 15
-        .long sys_ni_syscall
-        .long sys_ni_syscall
-        .long sys_ni_syscall
-        .long sys_ni_syscall
-        .long sys_ni_syscall// 20
-
