@@ -58,9 +58,11 @@ int sys_gettime() {
 
 
 int sys_write(int fd, char * buffer, int size) {
-        if (check_fd(fd, ESCRIPTURA) == EBADF) {
+        int result;
+	result = check_fd(fd, ESCRIPTURA);
+	if (result != 0) {
             //error bad file descriptor
-            return -1*EBADF;
+            return result;
         }
         if ( buffer == NULL ) {
             //error buffer

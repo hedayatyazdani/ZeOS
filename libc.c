@@ -3,10 +3,19 @@
  */
 
 #include <libc.h>
-
 #include <types.h>
 
+#define EBADF 9 
+#define EFAULT 14 
+#define EINVAL 22 
+#define EACCES 13
+
 int errno;
+
+void print(char * array) {
+	write(1, array, strlen(array));
+}
+
 int write(int fd, char * buffer, int size) {
         int resultat;
         __asm__ __volatile__(
@@ -15,13 +24,13 @@ int write(int fd, char * buffer, int size) {
         "movl %2, %%ecx\n"
         "movl %3, %%edx\n"
         "movl $0x04, %%eax\n"
-        "int  $0x80"
-        "movl %%eax %0 \n"
+        "int  $0x80\n"
+        "movl %%eax, %0\n"
 
 
-      :"g"(resultat)
-      : "g" (fd), "g" (buffer), "g" (size) );
-
+      :"=g"(resultat)
+      :"g" (fd), "g"(buffer), "g"(size) );
+	
         if (resultat >= 0) return resultat; //no optim, pero ensamblador ho corregirà
         else {
                 errno = -1*resultat;
@@ -29,17 +38,43 @@ int write(int fd, char * buffer, int size) {
         }
 }
 
+
+void perror()
+{
+	if(errno == EFAULT){
+        	char error[] = {"Bad address"};
+        	write(1, error, strlen(error));
+
+    	}else if(errno == EBADF){
+        	char error[] = {"Bad file descriptor"};
+        	write(1, error, strlen(error));
+
+    	}else if(errno == EINVAL){
+        	char error[] = {"Invalid argument"};
+        	write(1, error, strlen(error));
+    	}else if (errno == EACCES) {
+		char error[] = {"Permision denied"};
+        	write(1, error, strlen(error));
+	}
+}
+
+
 int gettime() {
+
         int ticks;
+
         __asm__ __volatile__(
-
+	
         "movl $0x0A, %%eax\n"
-        "int  $0x80"
-        "movl %%eax %0 \n"
+        "int  $0x80\n"
+        "movl %%eax, %0\n"
 
-      	:"g"(ticks)
-      	: );
+      	:"=g"(ticks)
+
+      	);
+
 	return ticks;
+
 }
 
 void itoa(int a, char *b)
