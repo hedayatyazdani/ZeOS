@@ -12,53 +12,33 @@ int __attribute__ ((__section__(".text.main")))
 
 	
 	//;
-	//int state = write(1,&tick,strlen(&tick));
+
+	char salto = '\n';	
+	print(&(salto)); print(&(salto)); 
 	
-
-
-	//char tick[] = {"EL WRITE FUNCIONA!!!!!aixo e suna prova del write"};
-	//int stat = write(1, tick, strlen(tick));
-	char salto = '\n';
-	print(&(salto));
-	print(&(salto));
-
+	print ("\n time: ");
 	
-	print("/n EL WRITE FUNCIONA");
-    
-
-	print ("ara farem el time");
 	int ticks = gettime();
-	char tick;
-	
-
+	char tick;	
   	while(ticks < 10) {
-
 		ticks = gettime();
+		itoa(ticks, &tick);		
+		
+		print(&(salto)); print (&tick); print(&(salto));
+	}
 
+	print("\n Check perror \n");
 
- 	}
+	char prova[] = {"\n Check EBADF \n"};
 	
-	print(&(salto));
-	itoa(ticks, &tick);
-	//print (&tick);
-	print(&(salto));
-
-
-	print("/n ARA PROVAREM SI PERROR FUNCIONA CORRECTAMENT");
-
-	char prova[] = {"anem a probar el EBADF"};
 	write(0, prova, strlen(prova));
-	print(&(salto));
-	perror();
-	print(&(salto));
-
 	
-	
-	char prova2[] = {"anem a probar EINVAL"};
-	write(1, prova2, 0);
-	print(&(salto));
-	perror();
-	print(&(salto));
+	print(&(salto)); perror(); print(&(salto));
 
-	while(1){}
+	char prova2[] = {"\n Check EINVAL \n"};
+	write(1, prova2, 0); 
+	
+	print(&(salto)); perror(); print(&(salto));
+
+	while(1) {}
 }

@@ -2,17 +2,11 @@
  * sys.c - Syscalls implementation
  */
 #include <devices.h>
-
 #include <utils.h>
-
 #include <io.h>
-
 #include <mm.h>
-
 #include <mm_address.h>
-
 #include <sched.h>
-
 #include <interrupt.h>
 
 #define LECTURA 0
@@ -25,30 +19,24 @@
 char dest[N];
 
 
-int check_fd(int fd, int permissions)
-{
-  if (fd!=1) return -9; /*EBADF*/
-  if (permissions!=ESCRIPTURA) return -13; /*EACCES*/
-  return 0;
+int check_fd(int fd, int permissions) {
+    if (fd!=1) return -9; /*EBADF*/
+    if (permissions!=ESCRIPTURA) return -13; /*EACCES*/
+    return 0;
 }
 
-int sys_ni_syscall()
-{
-	return -38; /*ENOSYS*/
-}
 
-int sys_getpid()
-{
-	return current()->PID;
-}
+int sys_ni_syscall() /*ENOSYS*/
+	{ return -38; }
 
-int sys_fork()
-{
-  int PID=-1;
+int sys_getpid() 
+	{ return current()->PID; }
 
-  // creates the child process
-  
-  return PID;
+int sys_fork() {
+    int PID=-1;
+
+    // creates the child process  
+    return PID;
 }
 
 int sys_gettime() {	
@@ -58,38 +46,35 @@ int sys_gettime() {
 
 
 int sys_write(int fd, char * buffer, int size) {
-        int result;
+    int result;
 	result = check_fd(fd, ESCRIPTURA);
-	if (result != 0) {
-            //error bad file descriptor
-            return result;
-        }
-        if ( buffer == NULL ) {
-            //error buffer
-            return -1*EFAULT;
-        }
-        if (size <= 0) {
-            //error tamaño invalido
-            return -1*EINVAL;
-        }
 
-        int escrits = 0;
-        int error = 0;
-        while (error == 0 && size > 0) {
-                if (copy_from_user(buffer, dest, size) == -1) {
-                        //error al hacer el copy_from_user
-                        return -1*EFAULT;
-                }
-                if (size > N){
-                        error = sys_write_console(dest, N);
-                        size -= error;
-                        escrits += error;
-                }else {
-                        error = sys_write_console(dest, size);
-                        size -= error;
-                        escrits += error;
-                }
+	//error bad file descriptor          
+	if (result != 0)    return result;
+
+	//error buffer
+    if (buffer == NULL)	return -1*EFAULT;         
+                    
+    //error tamaño invalido
+    if (size <= 0) 		return -1*EINVAL;
+               
+    int escrits = 0;
+    int error = 0;
+    
+    while (error == 0 && size > 0) {
+        if (copy_from_user(buffer, dest, size) == -1)  // copy_from_user error
+    		return -1*EFAULT;
+        if (size > N) {
+            error = sys_write_console(dest, N);
+            size -= error;
+            escrits += error;
+        } else {
+            error = sys_write_console(dest, size);
+            size -= error;
+            escrits += error;
         }
-        if (error == 0)return error;
-        else return escrits;
+    }
+    
+    if (error == 0) return error;
+    else            return escrits;
 }
