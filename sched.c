@@ -10,16 +10,18 @@
 LIST_HEAD(freequeue);
 LIST_HEAD(readyqueue);
 
+task_struct idle_task;
+
 union task_union task[NR_TASKS]
   __attribute__((__section__(".data.task")));
 
 
-#if 0
+
 struct task_struct *list_head_to_task_struct(struct list_head *l)
 {
   return list_entry( l, struct task_struct, list);
 }
-#endif 
+
 
 extern struct list_head blocked;
 
@@ -49,8 +51,9 @@ void cpu_idle(void)
 void init_idle (void)
 {
 	int pid = 0;
-	list_first(&freequeue);
-	
+	task_struct *ptr = list_first(&freequeue);
+	idle_task = list_head_to_task_struct(ptr);
+	list_del(&freequeue);	
 }
 
 void init_task1(void)
