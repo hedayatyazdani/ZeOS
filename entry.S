@@ -1,4 +1,4 @@
-/*
+ /*
 
  * entry.S - Entry point to system mode from user mode
 
@@ -7,6 +7,7 @@
 
 
 #include <asm.h>
+
 #include <segment.h>
 
 
@@ -152,6 +153,7 @@ ENTRY(keyboard_handler)
         RESTORE_ALL
 
         iret
+
 
 
 

@@ -20,12 +20,14 @@ int write(int fd, char * buffer, int size) {
     int resultat;
     __asm__ __volatile__(
 
+		"pushl %%ebx\n"
 		"movl %1, %%ebx\n"
 		"movl %2, %%ecx\n"
 		"movl %3, %%edx\n"
 		"movl $0x04, %%eax\n"
 		"int  $0x80\n"
 		"movl %%eax, %0\n"
+		"popl %%ebx\n"
 
 
         :"=g"(resultat)

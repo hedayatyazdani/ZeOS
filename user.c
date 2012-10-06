@@ -13,6 +13,7 @@ int __attribute__ ((__section__(".text.main")))
 	
 	//;
 
+/*
 	char salto = '\n';	
 	print(&(salto)); print(&(salto)); 
 	
@@ -39,6 +40,6 @@ int __attribute__ ((__section__(".text.main")))
 	write(1, prova2, 0); 
 	
 	print(&(salto)); perror(); print(&(salto));
-
+*/
 	while(1) {}
 }
