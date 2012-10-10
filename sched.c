@@ -10,7 +10,7 @@
 LIST_HEAD(freequeue);
 LIST_HEAD(readyqueue);
 
-struct task_struct *idle_task;
+struct task_union *idle_task;
 
 union task_union task[NR_TASKS]
   __attribute__((__section__(".data.task")));
@@ -51,9 +51,34 @@ void cpu_idle(void)
 void init_idle (void)
 {
 	int pid = 0;
-	struct task_struct *ptr = list_first(&freequeue);
+	struct task_union *ptr = list_first(&freequeue);
 	idle_task = list_head_to_task_struct(ptr);
 	list_del(&freequeue);	
+	
+	idle_task->pid = pid;
+	list_add(idle_task->list,&readyqueue);
+	
+	
+	// push &cpu_idle stack
+	void *ptr_cpuIdle = &cpu_idle();
+	void *ptr_stack = ;////////
+
+	idle_task->esp0 = setPush_cpuIdle(ptr_cpuIdle);
+	
+	//page_table_entry * dir_pages_baseAddr;	
+	
+}
+
+void setPush_cpuIdle(void *ptr_cpuIdle) {
+	DWord esp;
+	__asm__ __volatile__(
+
+		"pushl %1 \n" ; push de &cpu_idle a *ptr_stack
+		"pushl $0 \n"
+		"movl %%esp,%0 \n"
+		 
+        : "=g"(esp)
+        :"g" (ptr_cpuIdle), "g"(ptr_stack) );			
 }
 
 void init_task1(void)
@@ -78,5 +103,10 @@ struct task_struct* current()
 	: "=g" (ret_value)
   );
   return (struct task_struct*)(ret_value&0xfffff000);
+}
+
+void switch_task() {
+
+	
 }
 
