@@ -10,8 +10,8 @@
 LIST_HEAD(freequeue);
 LIST_HEAD(readyqueue);
 
-struct task_union *idle_task;
-
+struct task_struct *idle_task;
+struct task_struct *init_task;
 union task_union task[NR_TASKS]
   __attribute__((__section__(".data.task")));
 
@@ -50,39 +50,30 @@ void cpu_idle(void)
 
 void init_idle (void)
 {
-	int pid = 0;
-	struct task_union *ptr = list_first(&freequeue);
+	struct list_head *ptr = list_first(&freequeue);
 	idle_task = list_head_to_task_struct(ptr);
-	list_del(&freequeue);	
-	
-	idle_task->pid = pid;
-	list_add(idle_task->list,&readyqueue);
-	
-	
-	// push &cpu_idle stack
-	void *ptr_cpuIdle = &cpu_idle();
-	void *ptr_stack = ;////////
+	list_del(ptr);	
 
-	idle_task->esp0 = setPush_cpuIdle(ptr_cpuIdle);
+	idle_task->PID = 0;
 	
-	//page_table_entry * dir_pages_baseAddr;	
+	union task_union *aux_union;
+    aux_union = (union task_union *)idle_task;
+	aux_union->stack[1022] = 0;
+	aux_union->stack[1023] = cpu_idle;
 	
-}
-
-void setPush_cpuIdle(void *ptr_cpuIdle) {
-	DWord esp;
-	__asm__ __volatile__(
-
-		"pushl %1 \n" ; push de &cpu_idle a *ptr_stack
-		"pushl $0 \n"
-		"movl %%esp,%0 \n"
-		 
-        : "=g"(esp)
-        :"g" (ptr_cpuIdle), "g"(ptr_stack) );			
+	idle_task->kernel_esp = &aux_union->stack[1022];	
 }
 
 void init_task1(void)
 {
+
+	struct list_head *ptr = list_first(&freequeue);
+	init_task = list_head_to_task_struct(ptr);
+	list_del(ptr);	
+	idle_task->PID = 1;		
+	
+	set_user_pages(init_task);
+	set_cr3(init_task->dir_pages_baseAddr);			
 }
 
 
@@ -105,8 +96,39 @@ struct task_struct* current()
   return (struct task_struct*)(ret_value&0xfffff000);
 }
 
-void switch_task() {
+void task_switch(union task_union *new) {
 
+ 	struct task_struct *current_task;
+ 	current_task = current();
+
+
+	tss.esp0 = (DWord) &new->stack[1024];
+	set_cr3(new.task.dir_pages_baseAddr);	
 	
+ 	current_task.kernel_esp = direccio_ebp();
+ 	
+ 	struct task_struct aux = new->task;
+ 	int new_esp = aux->kernel_esp;
+ 	restore_new_task(new_esp);
+ 	
 }
+
+int direccio_ebp() {
+	 int ret_value;
+    __asm__ __volatile__(
+		"movl %%ebp,%0\n"     	:"=g"(ret_value)
+    );
+    return ret_value;
+}
+
+void restore_new_task(int new_esp) {
+
+    __asm__ __volatile__(
+		"movl %0, %%esp\n"
+		"popl %%ebp \n"
+		"ret"     	:
+     	:"g" (new_esp)
+    );
+}
+
 

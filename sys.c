@@ -61,14 +61,17 @@ int sys_write(int fd, char * buffer, int size) {
     int escrits = 0;
     int error = 0;
     
-    while (error == 0 && size > 0) {
-        if (copy_from_user(buffer, dest, size) == -1)  // copy_from_user error
-    		return -1*EFAULT;
-        if (size > N) {
+    while (error == 0 && size > 0) { // falta comprovar el tam size !!!!!       
+        if (size > N) {        
+            if (copy_from_user(buffer, dest, N) == -1)  // copy_from_user error
+    			return -1*EFAULT;
+        
             error = sys_write_console(dest, N);
             size -= error;
             escrits += error;
         } else {
+	        if (copy_from_user(buffer, dest, size) == -1)  // copy_from_user error
+    			return -1*EFAULT;
             error = sys_write_console(dest, size);
             size -= error;
             escrits += error;

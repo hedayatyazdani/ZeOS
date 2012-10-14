@@ -41,5 +41,6 @@ int __attribute__ ((__section__(".text.main")))
 	
 	print(&(salto)); perror(); print(&(salto));
 */
+	print("\n Check init \n");
 	while(1) {}
 }
