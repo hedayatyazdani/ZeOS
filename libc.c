@@ -41,6 +41,49 @@ int write(int fd, char * buffer, int size) {
     }
 }
 
+int getpid() {
+	int resultat;
+    	__asm__ __volatile__(
+
+		"pushl %%ebx\n"	
+		"movl $0x14, %%eax\n"
+		"int  $0x80\n"
+		"movl %%eax, %0\n"
+		"popl %%ebx\n"
+
+
+        :"=g"(resultat));
+
+	return resultat;
+}
+
+int fork() {
+	int resultat;
+    	__asm__ __volatile__(
+
+		"pushl %%ebx\n"	
+		"movl $0x02, %%eax\n"
+		"int  $0x80\n"
+		"movl %%eax, %0\n"
+		"popl %%ebx\n"
+
+
+        :"=g"(resultat));
+
+
+	if (resultat >= 0) 
+        	return resultat;
+    	else {
+        	errno = -1*resultat;
+        	return -1;
+    	}
+
+	/*
+	if (error )return -1;
+	if (es el child) return 0;
+	if (es el pare) return childPID;
+	*/
+}
 
 void perror()
 {
