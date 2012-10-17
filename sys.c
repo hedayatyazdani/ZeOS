@@ -17,7 +17,7 @@
 #define EINVAL 22
 
 char dest[N];
-
+extern struct list_head freequeue;
 
 int check_fd(int fd, int permissions) {
     if (fd!=1) return -9; /*EBADF*/
@@ -33,7 +33,7 @@ int sys_getpid()
 	{ return current()->PID; }
 
 
-
+/*
 int sys_fork() {
     int PID=-1;
     
@@ -45,7 +45,7 @@ int sys_fork() {
 		struct list_head *ptr = list_first(&freequeue);
 		new_task = list_head_to_task_struct(ptr);
 		list_del(ptr);
-	} else return EROR_NO_KEDEN_TASKSTRUCT_LLIURES;
+	} else return ERROR_NO_KEDEN_TASKSTRUCT_LLIURES;
 
 	//b 
 	int numeroPaginaFisica = alloc_frames();
@@ -64,7 +64,7 @@ int sys_fork() {
     // creates the child process  
     return PID;
 }
-
+*/
 int sys_gettime() {	
 	int ticks = get_zeos_ticks();
 	return ticks;
@@ -72,7 +72,7 @@ int sys_gettime() {
 
 
 int sys_write(int fd, char * buffer, int size) {
-    int result;
+    int result; int escrits; int error;
 	result = check_fd(fd, ESCRIPTURA);
 
 	//error bad file descriptor          
@@ -84,8 +84,8 @@ int sys_write(int fd, char * buffer, int size) {
     //error tamaño invalido
     if (size <= 0) 		return -1*EINVAL;
                
-    int escrits = 0;
-    int error = 0;
+    escrits = 0;
+    error = 0;
     
     while (error == 0 && size > 0) { // falta comprovar el tam size !!!!!       
         if (size > N) {        

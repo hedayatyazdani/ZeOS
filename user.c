@@ -40,7 +40,28 @@ int __attribute__ ((__section__(".text.main")))
 	write(1, prova2, 0); 
 	
 	print(&(salto)); perror(); print(&(salto));
+	
+	
+	
+	
+
+	char* t;
+	itoa(time,t);
 */
+
+
+    char *txt;
+	int time=10;
+	while (time < 200) {
+	time = gettime();
+	itoa(time,&txt);
+	print("\n  \n");
+    print (&txt);	
+	print("\n  \n");
+		
+	}
+	
 	print("\n Check init \n");
+	
 	while(1) {}
 }

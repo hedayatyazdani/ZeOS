@@ -107,10 +107,10 @@ void keyboard_service_routine() {
 }
 
 void clock_service_routine() {
-	zeos_show_clock();
+	//zeos_show_clock();
 	++zeos_ticks;
 }
 
-int get_zeos_ticks() {
+int get_zeos_ticks() {	
 	return zeos_ticks;
 }
