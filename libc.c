@@ -56,7 +56,7 @@ int getpid() {
 
 	return resultat;
 }
-/*
+
 int fork() {
 	int resultat;
     	__asm__ __volatile__(
@@ -83,7 +83,7 @@ int fork() {
 	if (es el child) return 0;
 	if (es el pare) return childPID;
 	*/
-//}
+}
 
 
 void perror()

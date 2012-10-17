@@ -33,7 +33,7 @@ int sys_getpid()
 	{ return current()->PID; }
 
 
-/*
+
 int sys_fork() {
     int PID=-1;
     
@@ -64,7 +64,7 @@ int sys_fork() {
     // creates the child process  
     return PID;
 }
-*/
+
 int sys_gettime() {	
 	int ticks = get_zeos_ticks();
 	return ticks;
