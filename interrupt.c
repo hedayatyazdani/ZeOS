@@ -5,9 +5,7 @@
 #include <interrupt.h>
 #include <segment.h>
 #include <hardware.h>
-#include <io.h>
-#include <entry.h>
-#include <zeos_interrupt.h>
+#include <io.h>#include <entry.h>#include <zeos_interrupt.h>
 
 Gate idt[IDT_ENTRIES];
 Register idtR;
@@ -82,13 +80,13 @@ void setIdt()
   idtR.base  = (DWord)idt;
   idtR.limit = IDT_ENTRIES * sizeof(Gate) - 1;
 
-
   /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
-
-  setInterruptHandler(0x20, clock_handler, 0);		// IDT 32
-  setInterruptHandler(0x21, keyboard_handler, 0); 	// IDT 33  
+  setInterruptHandler(0x21, keyboard_handler, 0); // IDT entry 33  
+  setInterruptHandler(0x20, clock_handler, 0);	//   IDT 32
 
   setTrapHandler(0x80, system_call_handler, 3);
+
+  set_handlers();
 
   set_idt_reg(&idtR);
 }
@@ -107,10 +105,10 @@ void keyboard_service_routine() {
 }
 
 void clock_service_routine() {
-	//zeos_show_clock();
+	zeos_show_clock();
 	++zeos_ticks;
 }
 
-int get_zeos_ticks() {	
+int get_zeos_ticks() {
 	return zeos_ticks;
 }

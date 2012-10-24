@@ -97,7 +97,7 @@ struct task_struct* current()
 }
 
 
-int direccio_ebp() {
+	int direccio_ebp() {
 	 int ret_value;
     __asm__ __volatile__(
 		"movl %%ebp,%0\n"     	:"=g"(ret_value)

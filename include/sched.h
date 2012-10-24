@@ -19,6 +19,7 @@ struct task_struct {
   int kernel_esp;
   page_table_entry * dir_pages_baseAddr;
   struct list_head list;
+  int quantum;
 };
 
 union task_union {
@@ -40,7 +41,7 @@ void init_sched(void);
 
 struct task_struct * current();
 
-void task_switch(union task_union *t, int eoi);
+void task_switch(union task_union*t, int need_eoi);
 
 struct task_struct *list_head_to_task_struct(struct list_head *l);
 
