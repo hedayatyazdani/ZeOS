@@ -9,6 +9,8 @@
 #define EFAULT 14 
 #define EINVAL 22 
 #define EACCES 13
+#define ENOMEM 12
+#define EAGAIN 11
 
 int errno;
 
@@ -77,12 +79,6 @@ int fork() {
        	errno = -1*resultat;
        	return -1;
    	}
-
-	/*
-	if (error )return -1;
-	if (es el child) return 0;
-	if (es el pare) return childPID;
-	*/
 }
 
 void perror()
@@ -101,6 +97,12 @@ void perror()
     	}else if (errno == EACCES) {
 		char error[] = {"Permision denied"};
         	write(1, error, strlen(error));
+	}else if (errno == EAGAIN) {
+		char error[] = {"Cannot allocate a task structure to the child"};
+        	write(1, error, strlen(error));
+	}else if (errno == ENOMEM) {
+		char error[] = {"Out of memory"};
+        	write(1, error, strlen(error));
 	}
 }
 
@@ -110,7 +112,6 @@ int gettime() {
     int ticks;
     __asm__ __volatile__(
 	
-		"pushl %%ebx\n"	//ho he afegit nos e si es correcte
 		"movl $0x0A, %%eax\n"
 		"int  $0x80\n"
 		"movl %%eax, %0\n"
@@ -143,6 +144,14 @@ void itoa(int a, char *b)
     b[i-i1-1]=c;
   }
   b[i]=0;
+}
+
+void exit() {
+	
+	__asm__ __volatile__(
+		"movl $0x01, %eax\n"
+		"int  $0x80\n"
+	);
 }
 
 int strlen(char *a)

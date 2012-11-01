@@ -101,25 +101,18 @@ struct task_struct* current()
 }
 
 void task_switch(union task_union *new, int eoi) {
-// Save context
-        printk("COMENcA TASK SIWTCH\n");		
+
 	struct task_struct *current_task;
         current_task = current();
-        
-	//1
-	 printk("11111111111111\n");	
+        	
 	DWord aux;
 
-	//provar de reduir el codi aviam si va   	
+	
    	aux = (DWord)&(new->stack[KERNEL_STACK_SIZE]);
 	tss.esp0 = aux;
         
-	//2
-	printk("222222222222\n");	
+	
 	set_cr3(new->task.dir_pages_baseAddr);
-
-
-	printk("333333333333\n");
 
         __asm__ __volatile__(
 			"movl %%ebp, %0\n"

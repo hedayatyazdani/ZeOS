@@ -77,6 +77,13 @@ ENTRY(keyboard_handler)
 	RESTORE_ALL
 	iret
 
+ENTRY (ret_from_fork) 
+      RESTORE_ALL
+      movl $0, %eax; \
+      iret; \
+
+
+
 
 ENTRY (clock_handler)
 	SAVE_ALL	

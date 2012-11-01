@@ -112,6 +112,8 @@ int cont = 0;
 void clock_service_routine() {
 	zeos_show_clock();
 	++zeos_ticks;
+
+	
 }
 
 int get_zeos_ticks() {
