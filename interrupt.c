@@ -7,6 +7,9 @@
 #include <hardware.h>
 #include <io.h>#include <entry.h>#include <zeos_interrupt.h>
 
+extern struct task_struct *idle_task;
+extern struct task_struct *init_task;
+
 Gate idt[IDT_ENTRIES];
 Register idtR;
 
@@ -103,6 +106,8 @@ void keyboard_service_routine() {
 		printc(character_to_print);
 	}		
 }
+
+int cont = 0;
 
 void clock_service_routine() {
 	zeos_show_clock();

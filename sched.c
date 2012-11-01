@@ -40,11 +40,14 @@ page_table_entry * get_PT (struct task_struct *t)
 
 void cpu_idle(void)
 {
+	
 	__asm__ __volatile__("sti": : :"memory");
 
 	while(1)
 	{
-	;
+	int i;
+	for(i=0;i < 20000; ++i);
+	printk("cpu_idle\n");
 	}
 }
 
@@ -57,11 +60,11 @@ void init_idle (void)
 	idle_task->PID = 0;
 	
 	union task_union *aux_union;
-    aux_union = (union task_union *)idle_task;
+    	aux_union = (union task_union *)idle_task;
 	aux_union->stack[1022] = 0;
 	aux_union->stack[1023] = cpu_idle;
 	
-	idle_task->kernel_esp = &aux_union->stack[1022];	
+	idle_task->kernel_esp = &(aux_union->stack[1022]);	
 }
 
 void init_task1(void)
@@ -70,7 +73,8 @@ void init_task1(void)
 	struct list_head *ptr = list_first(&freequeue);
 	init_task = list_head_to_task_struct(ptr);
 	list_del(ptr);	
-	idle_task->PID = 1;		
+	
+	init_task->PID = 1;		
 	
 	set_user_pages(init_task);
 	set_cr3(init_task->dir_pages_baseAddr);			
@@ -81,7 +85,7 @@ void init_sched(){
 	int i = 0;	
 	list_add(&task[0].task.list, &freequeue);
 	for (i = 1; i < NR_TASKS; i++) {
-		list_add(&task[i].task.list,&freequeue);
+		list_add_tail(&task[i].task.list,&freequeue);
 	}
 }
 
@@ -96,41 +100,34 @@ struct task_struct* current()
   return (struct task_struct*)(ret_value&0xfffff000);
 }
 
+void task_switch(union task_union *new, int eoi) {
+// Save context
+        printk("COMENcA TASK SIWTCH\n");		
+	struct task_struct *current_task;
+        current_task = current();
+        
+	//1
+	 printk("11111111111111\n");	
+	DWord aux;
 
-	int direccio_ebp() {
-	 int ret_value;
-    __asm__ __volatile__(
-		"movl %%ebp,%0\n"     	:"=g"(ret_value)
-    );
-    return ret_value;
+	//provar de reduir el codi aviam si va   	
+   	aux = (DWord)&(new->stack[KERNEL_STACK_SIZE]);
+	tss.esp0 = aux;
+        
+	//2
+	printk("222222222222\n");	
+	set_cr3(new->task.dir_pages_baseAddr);
+
+
+	printk("333333333333\n");
+
+        __asm__ __volatile__(
+			"movl %%ebp, %0\n"
+                        "movl %1, %%esp\n"
+			"popl %%ebp\n"
+			"ret"
+                        :"=g" (current_task->kernel_esp)
+                        : "g" (new->task.kernel_esp)
+
+        );
 }
-
-
-void task_switch(union task_union *new,int eoi) {
-
- 	struct task_struct *current_task;
-	
- 	current_task = current();
-
-	tss.esp0 = (DWord)&(new->stack[KERNEL_STACK_SIZE]);
-	set_cr3(new->task.dir_pages_baseAddr);	
-	
- 	current_task->kernel_esp = direccio_ebp();
- 	
- 	struct task_struct aux = new->task;
- 	int new_esp = aux.kernel_esp;
- 	restore_new_task(new_esp);
- 	
-}
-
-void restore_new_task(int new_esp) {
-
-    __asm__ __volatile__(
-		"movl %0, %%esp\n"
-		"popl %%ebp \n"
-		"ret"     	:
-     	:"g" (new_esp)
-    );
-}
-
-

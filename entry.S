@@ -72,15 +72,15 @@
 
 ENTRY(keyboard_handler) 
 	SAVE_ALL 
-	CALL keyboard_service_routine
-    EOI
+	EOI
+	CALL keyboard_service_routine 	
 	RESTORE_ALL
 	iret
 
 
 ENTRY (clock_handler)
 	SAVE_ALL	
-	CALL clock_service_routine
 	EOI
+	CALL clock_service_routine	
 	RESTORE_ALL
 	iret

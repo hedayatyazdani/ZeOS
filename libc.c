@@ -110,6 +110,7 @@ int gettime() {
     int ticks;
     __asm__ __volatile__(
 	
+		"pushl %%ebx\n"	//ho he afegit nos e si es correcte
 		"movl $0x0A, %%eax\n"
 		"int  $0x80\n"
 		"movl %%eax, %0\n"
